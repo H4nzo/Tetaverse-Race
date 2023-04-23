@@ -64,6 +64,12 @@ namespace Hanzo.Player
             if (other.CompareTag("Enemy"))
             {
                 //Player is dead
+               PlayerScript playerScript =  gameObject.GetComponent<PlayerScript>();
+               playerScript.enabled = false;
+               
+               //Display GameOver
+               
+                
 
             }
         }
