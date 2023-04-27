@@ -5,39 +5,55 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using Hanzo.Enemy;
 using Hanzo.Player;
-
-// Use Photon Callback Function to fire when player has joined the room
-//so it can be added to the playerscript gameobject
+using Photon.Pun;
 
 namespace Hanzo
 {
-
-    public class Timer : MonoBehaviour, IPointerClickHandler
+    public class Timer : MonoBehaviourPunCallbacks, IPointerClickHandler
     {
         public GameObject[] playerScript;
         public GameObject[] enemies;
 
-
         public void OnPointerClick(PointerEventData eventData)
         {
-            Pause = !Pause;
+            photonView.RPC("TogglePause", RpcTarget.AllBuffered);
         }
 
         [SerializeField] private Image timeFill;
         [SerializeField] private Text timeText;
-
         public int Duration;
-
         private int remainingDuration;
-
         private bool Pause;
 
-        private void Start()
-        {
-            Being(Duration);
-        }
+      private void Start()
+{
+    // Check the number of players in the room
+    if (PhotonNetwork.CurrentRoom.PlayerCount >= 3)
+    {
+        // Start the timer
+        photonView.RPC("Begin", RpcTarget.AllBuffered, Duration);
 
-        private void Being(int Second)
+        // Enable the enemy spawner
+        GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
+        foreach (var ES in enemySpawners)
+        {
+            ES.GetComponent<EnemySpawner>().enabled = true;
+        }
+    }
+    else
+    {
+        // Disable the enemy spawner if there are not enough players
+        GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
+        foreach (var ES in enemySpawners)
+        {
+            ES.GetComponent<EnemySpawner>().enabled = false;
+        }
+    }
+}
+
+
+        [PunRPC]
+        private void Begin(int Second)
         {
             remainingDuration = Second;
             StartCoroutine(UpdateTimer());
@@ -77,14 +93,13 @@ namespace Hanzo
             }
             foreach (var PS in playerScript)
             {
-                   PS.GetComponent<PlayerScript>().enabled = false;
+                PS.GetComponent<PlayerScript>().enabled = false;
             }
-         
-
 
             //End Time , if want Do something
             //print("End");
         }
+
         public void OnGameOver()
         {
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -95,16 +110,14 @@ namespace Hanzo
                 enemy.GetComponent<Animator>().SetFloat("Blend", 0);
                 enemy.GetComponent<NavMeshAgent>().enabled = false;
             }
-            // GetComponent<EnemySpawner>().enabled = false;
 
             foreach (var PS in playerScript)
             {
                 PS.GetComponent<PlayerScript>().enabled = false;
             }
-            
+
             //End Time , if want Do something
             //print("End");
         }
     }
-
 }

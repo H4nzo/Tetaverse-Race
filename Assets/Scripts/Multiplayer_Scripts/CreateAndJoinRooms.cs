@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
+
+public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
+{
+    [SerializeField] InputField createInputField;
+    [SerializeField] InputField joinInputField;
+
+    public void CreateRoom()
+    {
+        RoomOptions ro = new RoomOptions();
+        ro.MaxPlayers = 3;
+        PhotonNetwork.CreateRoom(createInputField.text, ro, TypedLobby.Default);
+    }
+    public void JoinRoom()
+    {
+        PhotonNetwork.JoinRoom(joinInputField.text);
+    }
+    public override void OnJoinedRoom()
+    {
+        
+       PhotonNetwork.LoadLevel("GameScene");
+    }
+
+
+}
+
