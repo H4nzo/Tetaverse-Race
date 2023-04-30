@@ -21,7 +21,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         // PhotonNetwork.LoadLevel(1);
         SceneManager.LoadScene("Lobby");
-        PhotonNetwork.NickName = "Player "+ Random.Range(0, 1000).ToString("0000");
+        PhotonNetwork.NickName = PlayerPrefs.GetString("DISPLAYNAME");
     }
 
 
