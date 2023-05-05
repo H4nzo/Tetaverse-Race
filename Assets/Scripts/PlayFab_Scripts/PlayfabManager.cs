@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
 
 public class PlayfabManager : MonoBehaviour
 {
     [Header("Windows")]
     public GameObject nameWindow;
+    public GameObject loginScreen;
 
     [Header("Display Name Window")]
     public GameObject nameError;
@@ -19,50 +21,62 @@ public class PlayfabManager : MonoBehaviour
     [SerializeField] InputField passwordInput;
     [SerializeField] Text messageText;
 
+
+
     public GameObject MainWindow, loginPanel;
 
     private static PlayfabManager instance;
 
+    public bool isLoggedIn;
+
+
     // Use Awake() to make this script an instance and prevent it from being destroyed when a new scene is loaded
-    private void Awake()
+     void Awake()
     {
+        //Singleton method
+        
         if (instance == null)
         {
+            //First run, set the instance
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+        }
+        else if (instance != this)
+        {
+            //Instance is not the same as the one we have, destroy old one, and reset to newest one
+            Destroy(instance.gameObject);
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
+        
+        
+    //    AutoLogin();
+     
+        if (PlayerPrefs.HasKey("VALID_EMAIL"))
         {
-            Destroy(gameObject);
+           string userEmail = PlayerPrefs.GetString("VALID_EMAIL");
+           string userPassword = PlayerPrefs.GetString("VALID_PASSWORD");
+
+            var request = new LoginWithEmailAddressRequest{Email = userEmail, Password = userPassword, InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
+            {
+                GetPlayerProfile = true
+            }};
+            PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+
         }
+
+
+
     }
+
+    // private void Start()
+    // {
+    //     AutoLogin();
+    // }
+
 
     // Start is called before the first frame update
-    void Start()
-    {
-        string _email = PlayerPrefs.GetString("VALID_EMAIL").ToString();
-        string _password = PlayerPrefs.GetString("VALID_PASSWORD").ToString();
-
-        if (_email != null && _password != null)
-        {
-            var request = new LoginWithEmailAddressRequest
-            {
-                Email = _email,
-                Password = _password,
-                InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
-                {
-                    GetPlayerProfile = true
-                }
-            };
-            PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
-        }
-        else
-        {
-            return;
-        }
-
-        // Login();
-    }
 
     public void RegisterButton()
     {
@@ -83,11 +97,15 @@ public class PlayfabManager : MonoBehaviour
 
     void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
+        isLoggedIn = true;
         messageText.text = $"Register and Login Successful";
         string _EMAIL = emailInput.text;
         string _PASSWORD = passwordInput.text;
         PlayerPrefs.SetString("VALID_EMAIL", _EMAIL);
         PlayerPrefs.SetString("VALID_PASSWORD", _PASSWORD);
+        //  loginPanel.SetActive(false);
+        loginScreen.SetActive(false);
+        nameWindow.SetActive(true);
     }
 
 
@@ -104,6 +122,7 @@ public class PlayfabManager : MonoBehaviour
         };
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
     }
+
 
     public void ResetButton()
     {
@@ -135,24 +154,52 @@ public class PlayfabManager : MonoBehaviour
         messageText.text = "Logged in!";
         Debug.Log($"Successful login/account creation!");
         string name = null;
+        isLoggedIn = true;
 
         if (result.InfoResultPayload.PlayerProfile != null)
         {
             name = result.InfoResultPayload.PlayerProfile.DisplayName;
             PlayerPrefs.SetString("DISPLAYNAME", name);
-            loginPanel.SetActive(false);
+            // loginPanel.SetActive(false);
+            loginScreen.SetActive(false);
             MainWindow.SetActive(true);
             Text username = GameObject.Find("DisplayNameText").GetComponent<Text>();
             username.text = PlayerPrefs.GetString("DISPLAYNAME");
         }
-        if (name == null)
+        else if (name == null)
+        {
             nameWindow.SetActive(true);
+        }
+
 
         string _EMAIL = emailInput.text;
         string _PASSWORD = passwordInput.text;
         PlayerPrefs.SetString("VALID_EMAIL", _EMAIL);
         PlayerPrefs.SetString("VALID_PASSWORD", _PASSWORD);
     }
+
+    public void AutoLogin()
+    {
+        if (!isLoggedIn)
+        {
+            string email = PlayerPrefs.GetString("VALID_EMAIL");
+            string password = PlayerPrefs.GetString("VALID_PASSWORD");
+            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+            {
+                var request = new LoginWithEmailAddressRequest
+                {
+                    Email = email,
+                    Password = password,
+                    InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
+                    {
+                        GetPlayerProfile = true
+                    }
+                };
+                PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+            }
+        }
+    }
+
 
     public void SubmitNameButton()
     {
@@ -167,7 +214,13 @@ public class PlayfabManager : MonoBehaviour
     {
         Debug.Log("Updated Display Name !");
         string _DISPLAYNAME = nameInput.text;
+        nameWindow.SetActive(false);
+        MainWindow.SetActive(true);
         PlayerPrefs.SetString("DISPLAYNAME", _DISPLAYNAME);
+
+        Text username = GameObject.Find("DisplayNameText").GetComponent<Text>();
+        username.text = PlayerPrefs.GetString("DISPLAYNAME");
+
     }
 
     void OnError(PlayFabError error)
@@ -176,7 +229,8 @@ public class PlayfabManager : MonoBehaviour
         Debug.Log(error.GenerateErrorReport());
     }
 
-   
+
+
 
 
 

@@ -73,13 +73,14 @@ namespace Hanzo.Player
             {
                 //Player is dead
                 #region PlayerDead Mechanics
-                //  PlayerScript playerScript =  gameObject.GetComponent<PlayerScript>();
-                //  playerScript.enabled = false;
+
+                PlayerScript playerScript = gameObject.GetComponent<PlayerScript>();
+                playerScript.enabled = false;
+                gameObject.tag = "Untagged";
+
                 #endregion
 
                 //Display GameOver
-
-
 
             }
         }

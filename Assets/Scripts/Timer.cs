@@ -11,8 +11,10 @@ namespace Hanzo
 {
     public class Timer : MonoBehaviourPunCallbacks, IPointerClickHandler
     {
+        public GameObject GameOverUI, VictoryLapUI;
         public GameObject[] playerScript;
         public GameObject[] enemies;
+
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -24,14 +26,16 @@ namespace Hanzo
         public int Duration;
         private int remainingDuration;
         private bool Pause;
+        public int numberOfplayers = 1;
 
       private void Start()
 {
     // Check the number of players in the room
-    if (PhotonNetwork.CurrentRoom.PlayerCount >= 3)
+    if (PhotonNetwork.CurrentRoom.PlayerCount >= numberOfplayers)
     {
         // Start the timer
         photonView.RPC("Begin", RpcTarget.AllBuffered, Duration);
+       
 
         // Enable the enemy spawner
         GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
@@ -95,7 +99,8 @@ namespace Hanzo
             {
                 PS.GetComponent<PlayerScript>().enabled = false;
             }
-
+            
+            VictoryLapUI.SetActive(true);
             //End Time , if want Do something
             //print("End");
         }
@@ -116,8 +121,13 @@ namespace Hanzo
                 PS.GetComponent<PlayerScript>().enabled = false;
             }
 
+            GameOverUI.SetActive(true);
+
             //End Time , if want Do something
             //print("End");
         }
+
+        
+
     }
 }

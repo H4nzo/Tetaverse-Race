@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
 using Photon.Realtime;
+using Hanzo.Player;
 
 namespace Hanzo
 {
@@ -90,6 +91,7 @@ namespace Hanzo
             anim.SetFloat("Blend", agent.velocity.magnitude);
 
         }
+
 
 
 

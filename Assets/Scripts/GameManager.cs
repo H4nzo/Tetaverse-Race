@@ -9,12 +9,21 @@ using PlayFab.ClientModels;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField]GameObject mainWindow, loginPanel;
-    
+    [SerializeField] GameObject mainWindow, loginPanel;
+    public GameObject usernameWindow;
 
+    private void Start() {
+        Time.timeScale = 1f;
+    }
     public void Play(string level)
     {
         PhotonNetwork.LoadLevel(level);
+    }
+
+    public void DisplayName()
+    {
+        mainWindow.SetActive(false);
+        usernameWindow.SetActive(true);
     }
 
 
@@ -24,7 +33,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-     public void LogoutButton()
+    public void LogoutButton()
     {
         PlayFabClientAPI.ForgetAllCredentials();
         loginPanel.SetActive(true);
@@ -33,7 +42,7 @@ public class GameManager : MonoBehaviour
         string password = null;
         PlayerPrefs.SetString("VALID_EMAIL", name);
         PlayerPrefs.SetString("VALID_PASSWORD", password);
-        
+
 
     }
 }
