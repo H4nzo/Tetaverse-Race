@@ -292,6 +292,7 @@ GameObject:
   - component: {fileID: 5341613120645012698}
   - component: {fileID: 7588124356968472394}
   - component: {fileID: -8436984830816886427}
+  - component: {fileID: 8168083350527079063}
   m_Layer: 0
   m_Name: Monster
   m_TagString: Enemy
@@ -428,6 +429,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!136 &8168083350527079063
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2466016710469702821}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2.1815765
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.59078825, z: 0}
 --- !u!1 &2569168935361795018
 GameObject:
   m_ObjectHideFlags: 0

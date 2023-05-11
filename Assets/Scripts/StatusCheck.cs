@@ -2,29 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Hanzo.Player;
+using Hanzo;
 
 public class StatusCheck : MonoBehaviour
 {
-    private PlayerScript playerScript;
-    private bool isPlaying;
-    public bool IsPlaying
-    {
-        get { return isPlaying; }
-        set { isPlaying = value; }
-    }
-
-    private void Start()
-    {
-        playerScript = GetComponent<PlayerScript>();
-    }
+    public PlayerScript playerScript;
+    public bool isDead = false;
 
     // Update is called once per frame
     void Update()
     {
-        if (playerScript.enabled == false)
+        if (isDead == true)
         {
-            IsPlaying = true;
-
+            playerScript.enabled = false;
+            Timer _timer = GameObject.FindObjectOfType<Timer>();
+            _timer.OnGameOver();
+            gameObject.tag = "Untagged";
         }
 
     }

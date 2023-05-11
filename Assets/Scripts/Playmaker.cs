@@ -5,7 +5,7 @@ using Hanzo;
 public class Playmaker : MonoBehaviour
 {
     Timer _timer;
-    private StatusCheck[] statusChecks;
+    public StatusCheck[] statusChecks;
 
     // Update is called once per frame
     void Update()
@@ -14,13 +14,14 @@ public class Playmaker : MonoBehaviour
 
         if (statusChecks.Length >= 3)
         {
-            if (statusChecks[0].IsPlaying == true && statusChecks[1].IsPlaying == true && statusChecks[2].IsPlaying == true)
+            if (statusChecks[0].isDead == true)
             {
-                //All Players are dead
+                _timer = GameObject.FindObjectOfType<Timer>();
+                //All Players are dead  && statusChecks[1].isDead == true && statusChecks[2].isDead == true
                 _timer.OnGameOver();
             }
         }
-        _timer = GameObject.FindObjectOfType<Timer>();
+        
 
 
 

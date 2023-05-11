@@ -116,16 +116,18 @@ namespace Hanzo
                 enemy.GetComponent<NavMeshAgent>().enabled = false;
             }
 
-            foreach (var PS in playerScript)
-            {
-                PS.GetComponent<PlayerScript>().enabled = false;
-            }
+            // foreach (var PS in playerScript)
+            // {
+            //     PS.GetComponent<PlayerScript>().enabled = false;
+            // }
 
-            GameOverUI.SetActive(true);
+            // GameOverUI.SetActive(true);
 
             //End Time , if want Do something
             //print("End");
         }
+
+
 
         
 

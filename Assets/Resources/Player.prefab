@@ -1662,6 +1662,7 @@ MonoBehaviour:
   speed: 8
   vaultHeight: 5
   anim: {fileID: 6488766851122947073}
+  gameOverGO: {fileID: 74626878069203315, guid: ac24799a758ae46dfaa5385bb6cf6c7d, type: 3}
 --- !u!114 &4279701248617954128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1749,6 +1750,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e0e62ceccbab419cbcf96800bc4a3c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerScript: {fileID: 3614042766885377608}
+  isDead: 0
 --- !u!1 &5932619021671254269
 GameObject:
   m_ObjectHideFlags: 0

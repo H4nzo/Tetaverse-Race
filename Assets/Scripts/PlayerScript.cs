@@ -12,6 +12,7 @@ namespace Hanzo.Player
         public Animator anim;
         private Rigidbody rb;
         PhotonView view;
+        public GameObject gameOverGO;
 
         void Start()
         {
@@ -74,8 +75,7 @@ namespace Hanzo.Player
                 //Player is dead
                 #region PlayerDead Mechanics
 
-                PlayerScript playerScript = gameObject.GetComponent<PlayerScript>();
-                playerScript.enabled = false;
+                GameOver();
                 gameObject.tag = "Untagged";
 
                 #endregion
@@ -84,6 +84,21 @@ namespace Hanzo.Player
 
             }
         }
+
+        public void GameOver()
+        {
+
+                if (view.IsMine)
+                {
+                   GameObject Canvas = Instantiate(gameOverGO, transform.position, Quaternion.identity);
+                   Canvas.SetActive(true);
+                    Time.timeScale = 0;
+                }
+                anim.SetBool("Run", false);
+                enabled = false;
+            
+        }
+
 
 
 
