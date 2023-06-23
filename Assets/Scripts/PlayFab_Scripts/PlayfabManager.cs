@@ -75,9 +75,6 @@ public class PlayfabManager : MonoBehaviour
     //     AutoLogin();
     // }
 
-
-    // Start is called before the first frame update
-
     public void RegisterButton()
     {
         if (passwordInput.text.Length < 6)

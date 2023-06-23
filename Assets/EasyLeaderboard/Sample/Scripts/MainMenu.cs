@@ -6,11 +6,14 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private Text _nameText;
-    [SerializeField] private Image _profileImage;
-    [SerializeField] private Sprite _noProfileSprite;
-    [SerializeField] private GameObject _postLoginActions;
-    [SerializeField] private Text _scoreText;
+    private Text _nameText;
+    private Image _profileImage;
+    private Sprite _noProfileSprite;
+    private GameObject _postLoginActions;
+    private Text _scoreText;
+
+    public const string LEVEL = "newMenu";
+
 
     private void Start()
     {
@@ -19,6 +22,10 @@ public class MainMenu : MonoBehaviour
             _nameText.text = FacebookAndPlayFabManager.Instance.FacebookUserName;
             _profileImage.sprite = FacebookAndPlayFabManager.Instance.FacebookUserPictureSprite;
             _postLoginActions.SetActive(true);
+        }
+        else
+        {
+            LoginWithFacebook();
         }
     }
 
@@ -38,7 +45,14 @@ public class MainMenu : MonoBehaviour
             StartCoroutine(GetUserNameRoutine());
             StartCoroutine(GetUserPictureRoutine());
             StartCoroutine(WaitForPlayFabLogin());
+            StartCoroutine(LoadLevel(LEVEL));
         });
+    }
+
+    private IEnumerator LoadLevel(string level)
+    {
+        yield return new WaitUntil(() => !string.IsNullOrEmpty(FacebookAndPlayFabManager.Instance.FacebookUserName));
+        SceneManager.LoadScene(level);
     }
 
     // Shows the player's Facebook name as soon as it's available.

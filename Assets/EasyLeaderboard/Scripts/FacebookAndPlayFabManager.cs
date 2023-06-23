@@ -281,6 +281,8 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         Debug.LogError(message);
     }
 
+    
+
     /// <summary>
     /// Updates the value of a given PlayFab statistic.
     /// </summary>
