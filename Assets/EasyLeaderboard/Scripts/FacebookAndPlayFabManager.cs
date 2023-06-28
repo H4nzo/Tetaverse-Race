@@ -5,6 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager>
 {
@@ -35,11 +38,20 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
     [SerializeField]
     private string _pictureUrl;
 
+    public TMP_InputField email;
+    public TMP_InputField password;
+    private Image _profileImage;
+    public Sprite _defaultAvatarSprite;
+
+    private const string LEVEL = "newMenu";
+
     public string PlayFabTitleId { get { return _playFabTitleId; } }
     public string PlayFabUserId { get; private set; }
     public bool IsLoggedOnPlayFab { get; private set; }
 
     public bool IsLoggedOnFacebook { get; private set; }
+    public bool IsLoggedOnEmail { get; private set; }
+
     public string FacebookUserId { get; private set; }
     public string FacebookUserName { get; private set; }
     public Sprite FacebookUserPictureSprite { get; private set; }
@@ -49,7 +61,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         base.Awake();
         DontDestroyOnLoad(gameObject);
 
-        Debug.Log("EasyLeaderboard.Awake => FB.IsInitialized: " + FB.IsInitialized);
+        Debug.Log("FB.IsInitialized: " + FB.IsInitialized);
 
         if (FB.IsInitialized)
             return;
@@ -102,6 +114,24 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
                 if (successCallback != null)
                     successCallback(res);
             }));
+    }
+
+    public void LoginWithFacebook()
+    {
+        if (string.IsNullOrEmpty(PlayFabTitleId))
+        {
+            Debug.LogError("PlayFabTitleId is null.");
+            return;
+        }
+
+        if (IsLoggedOnFacebook)
+            return;
+
+        LogOnFacebook(successCallback: res =>
+        {
+            StartCoroutine(LoadLevel(LEVEL));
+            StartCoroutine(GetUserPictureRoutine());
+        });
     }
 
     private void SetLoggedInfo()
@@ -218,7 +248,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         IsLoggedOnFacebook = false;
         IsLoggedOnPlayFab = false;
         FacebookUserName = string.Empty;
-        FacebookUserPictureSprite = null;
+        FacebookUserPictureSprite = _defaultAvatarSprite;
     }
 
     private void LogOnPlayFab()
@@ -238,29 +268,26 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
     private void PlayFabLoginSuccessCallback(PlayFab.ClientModels.LoginResult result)
     {
-        Debug.Log("EasyLeaderboard.LogOnPlayFab => Success!");
+        Debug.Log("PlayFabLogin => Success!");
 
         IsLoggedOnPlayFab = true;
         PlayFabUserId = result.PlayFabId;
 
-        GetFacebookUserPicture("me", PictureHeight, PictureWidth, res =>
+        if (IsLoggedOnFacebook)
         {
-            FacebookUserPictureSprite = Sprite.Create(res.Texture, new Rect(0, 0, PictureHeight, PictureWidth), Vector2.zero);
-        });
+            GetFacebookUserPicture("me", PictureHeight, PictureWidth, res =>
+            {
+                FacebookUserPictureSprite = Sprite.Create(res.Texture, new Rect(0, 0, PictureHeight, PictureWidth), Vector2.zero);
+            });
+        }
+        else if (IsLoggedOnEmail)
+        {
+            FacebookUserPictureSprite = _defaultAvatarSprite;
+        }
+        GetPlayerDisplayName();
 
-        // ATTENTION:
-        // If you're having trouble getting the profile picture please comment the call above and uncomment the following.
-
-        //GetFacebookUserPictureFromUrl("me", PictureWidth, PictureHeight, res =>
-        //{
-        //    StartCoroutine(GetTextureFromGraphResult(res, tex =>
-        //    {
-        //        FacebookUserPictureSprite = Sprite.Create(tex, new Rect(0, 0, PictureWidth, PictureHeight), Vector2.zero);
-        //    }));
-        //});
-
-        UpdatePlayFabDisplayUserName();
     }
+
 
     private void PlayFabErrorCallback(PlayFabError error)
     {
@@ -281,7 +308,114 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         Debug.LogError(message);
     }
 
+
+
+
+    // ## EMAIL ADDRESS LOGIN CALLBACK FUNCTIONS
+
+    public void LoginWithEmail()
+    {
+
+        var request = new LoginWithEmailAddressRequest
+        {
+            Email = email.text,
+            Password = password.text
+        };
+
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginWithEmailSuccess, OnLoginFailure);
+    }
+
+    private void OnLoginWithEmailSuccess(PlayFab.ClientModels.LoginResult result)
+    {
+        IsLoggedOnEmail = true;
+        Debug.Log("Login with email successful!");
+
+        // Retrieve and display player's display name
+        GetPlayerDisplayName();
+
+        // Rest of your code...
+        StartCoroutine(LoadLevel(LEVEL));
+    }
+
+    private void OnLoginFailure(PlayFabError error)
+    {
+        Debug.LogError("Login failed: " + error.ErrorMessage);
+    }
+
+    public void RegisterWithEmail()
+    {
+        var request = new RegisterPlayFabUserRequest
+        {
+            Email = email.text,
+            Password = password.text,
+            RequireBothUsernameAndEmail = false // Set to true if you want to require a username in addition to email
+        };
+
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterWithEmailSuccess, OnRegisterFailure);
+    }
+
+    private void OnRegisterWithEmailSuccess(RegisterPlayFabUserResult result)
+    {
+        Debug.Log("Registration with email successful!");
+
+        // Retrieve and display player's display name
+        GetPlayerDisplayName();
+        StartCoroutine(LoadLevel(LEVEL));
+
+    }
+
+    private void OnRegisterFailure(PlayFabError error)
+    {
+        Debug.LogError("Registration failed: " + error.ErrorMessage);
+    }
+
+
+    // ## GETTING PLAYER AVATAR FROM PLAYFAB
+
     
+
+
+
+
+    public void GetPlayerDisplayName()
+    {
+        var request = new GetPlayerProfileRequest
+        {
+            PlayFabId = PlayFabUserId,
+            ProfileConstraints = new PlayerProfileViewConstraints
+            {
+                ShowDisplayName = true
+            }
+        };
+
+        PlayFabClientAPI.GetPlayerProfile(request, OnGetPlayerProfileSuccess, OnGetPlayerProfileFailure);
+    }
+
+    private void OnGetPlayerProfileSuccess(GetPlayerProfileResult result)
+    {
+        string displayName = result.PlayerProfile.DisplayName;
+        if (displayName == null)
+        {
+            GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            gameManager.usernameWindow.SetActive(true);
+        }
+        else
+        {
+            TextMeshProUGUI username = GameObject.Find("displayName").GetComponent<TextMeshProUGUI>();
+            username.text = displayName;
+            Debug.Log("Player Display Name: " + displayName);
+        }
+
+
+
+    }
+
+    private void OnGetPlayerProfileFailure(PlayFabError error)
+    {
+        Debug.LogError("Failed to retrieve player profile: " + error.ErrorMessage);
+    }
+
+
 
     /// <summary>
     /// Updates the value of a given PlayFab statistic.
@@ -328,7 +462,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
         var request = new UpdateUserTitleDisplayNameRequest
         {
-            DisplayName = FacebookUserId
+            DisplayName = PlayerPrefs.GetString("DISPLAYNAME")
         };
 
         PlayFabClientAPI.UpdateUserTitleDisplayName(request, null, PlayFabErrorCallback);
@@ -416,8 +550,21 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
             return true;
 
         Debug.LogError(string.Format("{0} is invalid (Cancelled={1}, Error={2}, JSON={3})",
-            result.GetType(), result.Cancelled, result.Error, Facebook.MiniJSON.Json.Serialize(result.ResultDictionary)));
+        result.GetType(), result.Cancelled, result.Error, Facebook.MiniJSON.Json.Serialize(result.ResultDictionary)));
 
         return false;
+    }
+
+    private IEnumerator LoadLevel(string level)
+    {
+        yield return new WaitUntil(() => !string.IsNullOrEmpty(email.text) || !string.IsNullOrEmpty(FacebookUserName));
+        SceneManager.LoadScene(level);
+    }
+
+    private IEnumerator GetUserPictureRoutine()
+    {
+        yield return new WaitUntil(() => FacebookUserPictureSprite != null);
+        _profileImage = GameObject.Find("displayImage").GetComponent<Image>();
+        _profileImage.sprite = FacebookUserPictureSprite;
     }
 }

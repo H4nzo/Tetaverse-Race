@@ -23,10 +23,10 @@ public class MainMenu : MonoBehaviour
             _profileImage.sprite = FacebookAndPlayFabManager.Instance.FacebookUserPictureSprite;
             _postLoginActions.SetActive(true);
         }
-        else
-        {
-            LoginWithFacebook();
-        }
+        // else
+        // {
+        //     LoginWithFacebook();
+        // }
     }
 
     public void LoginWithFacebook()
@@ -60,7 +60,7 @@ public class MainMenu : MonoBehaviour
     {
         yield return new WaitUntil(() => !string.IsNullOrEmpty(FacebookAndPlayFabManager.Instance.FacebookUserName));
 
-        _nameText.text = FacebookAndPlayFabManager.Instance.FacebookUserName;
+        // _nameText.text = FacebookAndPlayFabManager.Instance.FacebookUserName;
     }
 
     // Shows the player's Facebook picture as soon as it's available.
