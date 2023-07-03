@@ -79,5 +79,10 @@ public class GameManager : MonoBehaviour
         Debug.Log(error.GenerateErrorReport());
     }
 
+    public void Leaderboard()
+    {
+        FacebookAndPlayFabManager.Instance.SeeLeaderboard();
+
+    }
 
 }

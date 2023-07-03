@@ -56,6 +56,14 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
     public string FacebookUserName { get; private set; }
     public Sprite FacebookUserPictureSprite { get; private set; }
 
+    [HideInInspector]
+    public string emailUserSessionTicket;
+    [HideInInspector]
+    public string _displayName;
+
+    [HideInInspector]
+    public string loggedInPlayfabId;
+
     protected override void Awake()
     {
         base.Awake();
@@ -72,6 +80,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
     private void Start()
     {
         PlayFabSettings.TitleId = _playFabTitleId;
+
     }
 
     /// <summary>
@@ -272,6 +281,8 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
         IsLoggedOnPlayFab = true;
         PlayFabUserId = result.PlayFabId;
+        loggedInPlayfabId = result.PlayFabId;
+
 
         if (IsLoggedOnFacebook)
         {
@@ -327,7 +338,12 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
     private void OnLoginWithEmailSuccess(PlayFab.ClientModels.LoginResult result)
     {
-        IsLoggedOnEmail = true;
+        IsLoggedOnPlayFab = true;
+       loggedInPlayfabId = result.PlayFabId;
+
+
+         emailUserSessionTicket = result.SessionTicket;
+
         Debug.Log("Login with email successful!");
 
         // Retrieve and display player's display name
@@ -372,7 +388,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
     // ## GETTING PLAYER AVATAR FROM PLAYFAB
 
-    
+
 
 
 
@@ -394,6 +410,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
     private void OnGetPlayerProfileSuccess(GetPlayerProfileResult result)
     {
         string displayName = result.PlayerProfile.DisplayName;
+        _displayName = displayName;
         if (displayName == null)
         {
             GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -566,5 +583,9 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         yield return new WaitUntil(() => FacebookUserPictureSprite != null);
         _profileImage = GameObject.Find("displayImage").GetComponent<Image>();
         _profileImage.sprite = FacebookUserPictureSprite;
+    }
+    public void SeeLeaderboard()
+    {
+        SceneManager.LoadScene("LeaderboardScene");
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using PlayFab;
 
 public class LeaderboardMenu : MonoBehaviour
 {
@@ -50,38 +51,29 @@ public class LeaderboardMenu : MonoBehaviour
             entry.SetUserPosition(playerEntry.Position + 1);
             entry.SetUserScore(playerEntry.StatValue.ToString());
 
+            // Check if the player entry is for the logged-in Facebook user
             if (playerEntry.DisplayName == FacebookAndPlayFabManager.Instance.FacebookUserId)
             {
                 entry.SetUserName(FacebookAndPlayFabManager.Instance.FacebookUserName);
                 entry.SetUserPictureSprite(FacebookAndPlayFabManager.Instance.FacebookUserPictureSprite);
             }
+            // Check if the player entry is for the logged-in email user
+            else if (playerEntry.DisplayName == FacebookAndPlayFabManager.Instance._displayName)
+            {
+                entry.SetUserName(FacebookAndPlayFabManager.Instance._displayName);
+                // Set a default picture for email users or load a custom picture if available
+                entry.SetUserPictureSprite(null); // Replace with your own default sprite
+            }
             else
             {
-                FacebookAndPlayFabManager.Instance.GetFacebookUserName(playerEntry.DisplayName, res =>
-                {
-                    entry.SetUserName(res.ResultDictionary["name"].ToString());
-                });
-
-                FacebookAndPlayFabManager.Instance.GetFacebookUserPicture(playerEntry.DisplayName, width, height, res =>
-                {
-                    entry.SetUserPictureSprite(ImageUtils.CreateSprite(res.Texture, new Rect(0, 0, width, height), Vector2.zero));
-                });
-
-                // ATTENTION:
-                // If you're having trouble getting the profile picture please comment the call above and uncomment the following.
-
-                //FacebookAndPlayFabManager.Instance.GetFacebookUserPictureFromUrl(playerEntry.DisplayName, width, height, res =>
-                //{
-                //    StartCoroutine(FacebookAndPlayFabManager.Instance.GetTextureFromGraphResult(res, tex =>
-                //    {
-                //        entry.SetUserPictureSprite(Sprite.Create(tex, new Rect(0, 0, width, height), Vector2.zero));
-                //    }));
-                //});
+                // Handle other players (non-logged-in users) as required
             }
+
 
             _entries++;
         }
     }
+
 
     public void ClearLeaderboard()
     {
@@ -114,7 +106,7 @@ public class LeaderboardMenu : MonoBehaviour
 
     public void Back()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("newMenu");
     }
 
     public void Share()
