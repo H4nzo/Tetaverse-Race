@@ -205,7 +205,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 41799706}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 838813570}
+        m_TargetAssemblyTypeName: Leaderboard, Assembly-CSharp
+        m_MethodName: Back
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &41799706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -533,7 +545,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -6.479, y: 60}
+  m_AnchoredPosition: {x: -6.479004, y: 60}
   m_SizeDelta: {x: -272.119, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &659955403
@@ -778,8 +790,8 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_Camera: {fileID: 576520063}
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -832,6 +844,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1130241568}
+  - component: {fileID: 1130241569}
   m_Layer: 5
   m_Name: UIContainer
   m_TagString: Untagged
@@ -860,6 +873,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1130241569
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1130241567}
+  m_CullTransparentMesh: 1
 --- !u!1 &1216405519
 GameObject:
   m_ObjectHideFlags: 0
@@ -1751,7 +1772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -89.321}
+  m_AnchoredPosition: {x: 0, y: -89.320984}
   m_SizeDelta: {x: 0, y: -178.64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2134772039

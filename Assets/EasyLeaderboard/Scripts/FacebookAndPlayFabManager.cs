@@ -420,6 +420,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
         {
             TextMeshProUGUI username = GameObject.Find("displayName").GetComponent<TextMeshProUGUI>();
             username.text = displayName;
+            PlayerPrefs.SetString("DISPLAYNAME", displayName);
             Debug.Log("Player Display Name: " + displayName);
         }
 
@@ -479,7 +480,7 @@ public class FacebookAndPlayFabManager : MonoSingleton<FacebookAndPlayFabManager
 
         var request = new UpdateUserTitleDisplayNameRequest
         {
-            DisplayName = PlayerPrefs.GetString("DISPLAYNAME")
+            // DisplayName = PlayerPrefs.GetString("DISPLAYNAME")
         };
 
         PlayFabClientAPI.UpdateUserTitleDisplayName(request, null, PlayFabErrorCallback);

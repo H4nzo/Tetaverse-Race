@@ -9,11 +9,13 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 {
     [SerializeField] InputField createInputField;
     [SerializeField] InputField joinInputField;
+    [SerializeField] byte maxPlayers = 1;
+
 
     public void CreateRoom()
     {
         RoomOptions ro = new RoomOptions();
-        ro.MaxPlayers = 3;
+        ro.MaxPlayers = maxPlayers;
         PhotonNetwork.CreateRoom(createInputField.text, ro, TypedLobby.Default);
     }
     public void JoinRoom()
@@ -23,7 +25,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         
-       PhotonNetwork.LoadLevel("GameScene");
+       PhotonNetwork.LoadLevel("MAIN");
     }
 
 

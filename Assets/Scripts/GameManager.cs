@@ -67,8 +67,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString("DISPLAYNAME", _DISPLAYNAME);
 
         TextMeshProUGUI username = GameObject.Find("displayName").GetComponent<TextMeshProUGUI>();
-        username.text = PlayerPrefs.GetString("DISPLAYNAME");
-
+        username.text = nameInput.text;
         Debug.Log(result);
 
     }

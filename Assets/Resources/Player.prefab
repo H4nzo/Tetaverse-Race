@@ -1737,7 +1737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 4279701248617954128}
-  usernameText: {fileID: 6364502399249793768}
+  usernameText: {fileID: 0}
 --- !u!114 &6735615604728238549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2204,7 +2204,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6773275091549427470
 MonoBehaviour:
   m_ObjectHideFlags: 0
