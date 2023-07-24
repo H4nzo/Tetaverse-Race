@@ -7,6 +7,7 @@ using Photon.Pun;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
+using Hanzo;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,13 +19,34 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI messageText;
 
+    [SerializeField] GameObject characterSelectButton, characterSelectOBJ, nameText, selectButton, playButton;
+    [SerializeField]GameObject bottomUI;
+
+    public GameObject[] players;
+    
+
     private void Start()
     {
         Time.timeScale = 1f;
+        foreach (var p in players)
+        {
+            p.SetActive(false);
+        }
+        players[PlayerPrefs.GetInt(KeyValues.SELECTED_PLAYER.ToString())].SetActive(true);
     }
     public void Play(string level)
     {
         PhotonNetwork.LoadLevel(level);
+    }
+
+    public void CharacterSelect()
+    {
+        characterSelectButton.SetActive(false);
+        playButton.SetActive(false);
+        bottomUI.SetActive(false);
+        characterSelectOBJ.SetActive(true);
+        nameText.SetActive(true);
+        selectButton.SetActive(true);
     }
 
     public void Sound()

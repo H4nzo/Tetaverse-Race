@@ -103,6 +103,13 @@ namespace Hanzo
             VictoryLapUI.SetActive(true);
             //End Time , if want Do something
             //print("End");
+
+            Text playerText = GameObject.Find("playerText").GetComponent<Text>();
+            string winText = "wins";
+            string winnerName= GameObject.FindGameObjectWithTag("Player").GetComponent<PhotonView>().Owner.NickName;
+
+            playerText.text = $"{winnerName} {winText} ";
+            
         }
 
         public void OnGameOver()

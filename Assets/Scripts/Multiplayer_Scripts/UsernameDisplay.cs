@@ -11,6 +11,7 @@ public class UsernameDisplay : MonoBehaviour
 
     void Start()
     {
+        view = GetComponent<PhotonView>();
         usernameText.text = view.Owner.NickName;
     }
 }

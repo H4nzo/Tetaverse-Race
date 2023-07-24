@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -21,15 +22,19 @@ public class ButtonManager : MonoBehaviour
         
     }
 
+    
      public void Home()
     {
-        SceneManager.LoadScene("LoginScene");
+       PhotonNetwork.LoadLevel("newMenu");
         Time.timeScale = 1f;
+        // Debug.Log("Pressed");
     }
 
+    
     public void GotoLobby()
     {
-        SceneManager.LoadScene("Lobby");
+       PhotonNetwork.LoadLevel("Lobby");
+    //    Debug.Log("Pressed");
         Time.timeScale = 1f;
     }
 
