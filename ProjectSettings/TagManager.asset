@@ -11,6 +11,8 @@ TagManager:
   - Coin
   - EnemySpawner
   - Selector
+  - Item
+  - DeadZone
   layers:
   - Default
   - TransparentFX

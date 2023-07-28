@@ -16,7 +16,7 @@ namespace Hanzo.Enemy
 
         [SerializeField]
         private float timer, timeToSpawn;
-       
+
 
 
 
@@ -36,7 +36,11 @@ namespace Hanzo.Enemy
 
         IEnumerator WaitForEnemySync(GameObject enemy)
         {
-            enemy.transform.parent = enemyContainer;
+            List<GameObject> enemies = new List<GameObject>();
+            enemies.Add(enemy);
+            // enemies.ForEach(enem => enem.transform.parent = enemyContainer);
+
+
             yield return new WaitForSeconds(0.1f); // Wait for a short period of time
             while (!enemy.GetComponent<PhotonView>().IsMine)
             {

@@ -76,14 +76,17 @@ namespace Hanzo
                             if (xSwipe < 0)
                             {
                                 Next();
+                                SoundManager.instance.PlaySound("Swoosh");
                             }
                             else
                             {
                                 Previous();
+                                SoundManager.instance.PlaySound("Swoosh");
                             }
                         }
                     }
                 }
+                
             }
 
             // Handle mouse swipe input
@@ -129,18 +132,22 @@ namespace Hanzo
                 obj.SetActive(true);
             }
 
-
+    #if UNITY_EDITOR
             Debug.Log("Selected player: " + index);
+    #endif
         }
 
         public void Next()
         {
+            SoundManager.instance.PlaySound("Swoosh");
             index = (index + 1) % players.Length;
             SetActivePlayer();
+            
         }
 
         public void Previous()
         {
+            SoundManager.instance.PlaySound("Swoosh");
             index = (index - 1 + players.Length) % players.Length;
             SetActivePlayer();
         }

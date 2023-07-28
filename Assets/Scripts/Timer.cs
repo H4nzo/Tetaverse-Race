@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using Hanzo.Enemy;
 using Hanzo.Player;
 using Photon.Pun;
+using TMPro;
 
 namespace Hanzo
 {
@@ -22,7 +23,7 @@ namespace Hanzo
         }
 
         [SerializeField] private Image timeFill;
-        [SerializeField] private Text timeText;
+        [SerializeField] private TextMeshProUGUI timeText;
         public int Duration;
         private int remainingDuration;
         private bool Pause;

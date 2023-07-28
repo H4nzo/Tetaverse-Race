@@ -1,13 +1,10 @@
-using System;
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager instance;
 
     public Sound[] sounds;
-    public AudioMixerGroup mixerGroup;
 
     private void Awake()
     {
@@ -28,18 +25,22 @@ public class SoundManager : MonoBehaviour
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
             sound.source.loop = sound.loop;
-            sound.source.outputAudioMixerGroup = mixerGroup;
+            sound.source.playOnAwake = sound.playOnAwake;
         }
     }
 
+    // Add methods for playing, stopping, and adjusting volume/pitch of sounds.
+
+
     public void PlaySound(string name)
 {
-    Sound sound = Array.Find(sounds, s => s.name == name);
+    Sound sound = System.Array.Find(sounds, s => s.name == name);
     if (sound == null)
     {
         Debug.LogWarning("Sound: " + name + " not found!");
         return;
     }
+    Debug.Log($"Played {name}");
 
     sound.source.Play();
 }
