@@ -1090,6 +1090,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   createInputField: {fileID: 1408592381}
   joinInputField: {fileID: 209414207}
+  maxPlayers: 2
 --- !u!4 &855267481
 Transform:
   m_ObjectHideFlags: 0

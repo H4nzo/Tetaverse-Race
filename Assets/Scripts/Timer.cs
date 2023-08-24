@@ -13,8 +13,9 @@ namespace Hanzo
     public class Timer : MonoBehaviourPunCallbacks, IPointerClickHandler
     {
         public GameObject GameOverUI, VictoryLapUI;
-        public GameObject[] playerScript;
+        public PlayerScript[] playerScript;
         public GameObject[] enemies;
+        [HideInInspector]public bool hasEnded;
 
 
         public void OnPointerClick(PointerEventData eventData)
@@ -29,32 +30,36 @@ namespace Hanzo
         private bool Pause;
         public int numberOfplayers = 1;
 
-      private void Start()
-{
-    // Check the number of players in the room
-    if (PhotonNetwork.CurrentRoom.PlayerCount >= numberOfplayers)
-    {
-        // Start the timer
-        photonView.RPC("Begin", RpcTarget.AllBuffered, Duration);
-       
+        private void Start()
+        {
+            // Check the number of players in the room
+            if (PhotonNetwork.CurrentRoom.PlayerCount >= numberOfplayers)
+            {
+                // Start the timer
+                photonView.RPC("Begin", RpcTarget.AllBuffered, Duration);
+                hasEnded = false;
 
-        // Enable the enemy spawner
-        GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
-        foreach (var ES in enemySpawners)
-        {
-            ES.GetComponent<EnemySpawner>().enabled = true;
+                
+
+
+
+                // Enable the enemy spawner
+                GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
+                foreach (var ES in enemySpawners)
+                {
+                    ES.GetComponent<EnemySpawner>().enabled = true;
+                }
+            }
+            else
+            {
+                // Disable the enemy spawner if there are not enough players
+                GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
+                foreach (var ES in enemySpawners)
+                {
+                    ES.GetComponent<EnemySpawner>().enabled = false;
+                }
+            }
         }
-    }
-    else
-    {
-        // Disable the enemy spawner if there are not enough players
-        GameObject[] enemySpawners = GameObject.FindGameObjectsWithTag("EnemySpawner");
-        foreach (var ES in enemySpawners)
-        {
-            ES.GetComponent<EnemySpawner>().enabled = false;
-        }
-    }
-}
 
 
         [PunRPC]
@@ -82,6 +87,8 @@ namespace Hanzo
 
         public void OnEnd()
         {
+            hasEnded = true;
+
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
             foreach (var enemy in enemies)
@@ -100,17 +107,19 @@ namespace Hanzo
             {
                 PS.GetComponent<PlayerScript>().enabled = false;
             }
-            
+
             VictoryLapUI.SetActive(true);
+            PositionSystem positionSystem = GameObject.FindAnyObjectByType<PositionSystem>();
+            positionSystem.DisplayScoreboard();
             //End Time , if want Do something
             //print("End");
 
             Text playerText = GameObject.Find("playerText").GetComponent<Text>();
             string winText = "wins";
-            string winnerName= GameObject.FindGameObjectWithTag("Player").GetComponent<PhotonView>().Owner.NickName;
+            string winnerName = GameObject.FindGameObjectWithTag("Player").GetComponent<PhotonView>().Owner.NickName;
 
             playerText.text = $"{winnerName} {winText} ";
-            
+
         }
 
         public void OnGameOver()
@@ -123,6 +132,8 @@ namespace Hanzo
                 enemy.GetComponent<Animator>().SetFloat("Blend", 0);
                 enemy.GetComponent<NavMeshAgent>().enabled = false;
             }
+
+
 
             // foreach (var PS in playerScript)
             // {
@@ -137,7 +148,7 @@ namespace Hanzo
 
 
 
-        
+
 
     }
 }

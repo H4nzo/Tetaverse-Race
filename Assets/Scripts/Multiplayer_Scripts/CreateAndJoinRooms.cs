@@ -10,6 +10,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     [SerializeField] InputField createInputField;
     [SerializeField] InputField joinInputField;
     [SerializeField] byte maxPlayers = 1;
+    [SerializeField] const string GAME_SCENE = "MainRemake";
 
 
     public void CreateRoom()
@@ -25,7 +26,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         
-       PhotonNetwork.LoadLevel("MAIN");
+       PhotonNetwork.LoadLevel(GAME_SCENE);
     }
 
 

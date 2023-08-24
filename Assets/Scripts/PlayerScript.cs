@@ -9,6 +9,7 @@ namespace Hanzo.Player
 
     public class PlayerScript : MonoBehaviour
     {
+        
         public float speed, vaultHeight;
         public Animator anim;
         private Rigidbody rb;
@@ -19,19 +20,11 @@ namespace Hanzo.Player
         public int currentHealth;
         int damage;
 
-        public GameObject deadZoneIcon;
-        public TextMeshProUGUI timerText;
-        float countDown = 5f;
-        [SerializeField] bool CountDown_ = false;
-        private bool insideDeadZone = false;
+        public GameObject floatingTextPrefab;
 
-        
+        [HideInInspector] public int scorePosition;
 
-        private void Awake()
-        {
-            timerText.text = " ";
-
-        }
+        public int finalPosition;
 
         void Start()
         {
@@ -40,11 +33,23 @@ namespace Hanzo.Player
             anim.SetBool("Run", false);
             view = GetComponent<PhotonView>();
 
+
             currentHealth = maxHealth;
         }
 
         void Update()
         {
+            PositionSystem positionSystem = FindObjectOfType<PositionSystem>();
+            finalPosition = positionSystem.GetNextAvailablePosition();
+
+            string playerName = view.Owner.NickName; // Adjust this based on your Photon setup
+            positionSystem.AssignPlayerPosition(playerName, finalPosition);
+
+            Timer timer = GameObject.FindObjectOfType<Timer>();
+            if (timer.hasEnded == true)
+            {
+                this.GetComponent<PlayerScript>().enabled = false;
+            }
 
             float horizontal = Input.GetAxisRaw("Horizontal");
             float vertical = Input.GetAxisRaw("Vertical");
@@ -73,33 +78,7 @@ namespace Hanzo.Player
                 }
             }
 
-            if (CountDown_ == true)
-            {
-                countDown -= Time.deltaTime;
-                int count = (int)countDown;
-                timerText.text = $"{count}";
 
-
-                if (countDown <= 0)
-                {
-                    GameOver();
-                }
-            }
-
-
-
-            // if (anim.GetCurrentAnimatorStateInfo(0).IsName("Tumble") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            // {
-            //     anim.SetBool("Jump", false);
-            //     if (movement.magnitude > 0.07f)
-            //     {
-            //         anim.SetBool("Run", true);
-            //     }
-            //     else
-            //     {
-            //         anim.SetBool("Run", false);
-            //     }
-            // }
         }
 
         void OnTriggerEnter(Collider other)
@@ -109,12 +88,42 @@ namespace Hanzo.Player
             if (ability != null)
             {
                 ability.ExecuteAbility(this.gameObject);
+
             }
 
             IDamageable damageable = other.GetComponent<IDamageable>();
             if (damageable != null)
             {
                 damageable.Damage(this.gameObject, damage);
+
+                if (floatingTextPrefab)
+                {
+
+
+                    GameObject damageText = Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
+                    damageText.name = "damageText";
+
+                    if (currentHealth >= 75)
+                    {
+                        damageText.GetComponent<TextMeshPro>().color = Color.green;
+
+                    }
+                    else if (currentHealth >= 50)
+                    {
+                        damageText.GetComponent<TextMeshPro>().color = new Color32(255, 165, 0, 255);  //new Color(1.0f, 0.5f, 0.0f);
+
+                    }
+                    else
+                    {
+                        damageText.GetComponent<TextMeshPro>().color = Color.red;
+
+                    }
+                    damageText.GetComponent<TextMeshPro>().text = currentHealth.ToString();
+
+
+
+                }
+
                 if (currentHealth < 0)
                 {
                     // GameOver();
@@ -130,31 +139,15 @@ namespace Hanzo.Player
 
         }
 
-        void OnTriggerStay(Collider other)
-        {
-            if (other.CompareTag("DeadZone"))
-            {
-                StartCoroutine(DeadZoneCountDown(2f));
-                insideDeadZone = true;
-            }
-
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.CompareTag("DeadZone"))
-            {
-                StopCoroutine("DeadZoneCountDown");
-                insideDeadZone = false;
-            }
-
-
-        }
 
         public void Heal(int healAmount)
         {
             currentHealth += healAmount;
             currentHealth = Mathf.Min(currentHealth, maxHealth);
+
+            GameObject healthText = Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
+            healthText.GetComponent<TextMeshPro>().color = Color.green;
+            healthText.GetComponent<TextMeshPro>().text = $"+{healAmount} {currentHealth}";
         }
 
 
@@ -165,30 +158,11 @@ namespace Hanzo.Player
 
             if (currentHealth <= 0)
             {
-                // GameOver();
+                GameOver();
             }
         }
 
 
-        IEnumerator DeadZoneCountDown(float timeTaken)
-        {
-            yield return new WaitForSeconds(timeTaken);
-            deadZoneIcon.SetActive(true);
-
-            CountDown_ = true;
-
-            yield return new WaitUntil(() => !insideDeadZone); // Wait until the player leaves the DeadZone
-            ResetCountdown();
-        }
-
-
-        private void ResetCountdown()
-        {
-            CountDown_ = false;
-            countDown = 5f;
-            timerText.text = " ";
-            deadZoneIcon.SetActive(false);
-        }
 
 
         public void GameOver()
@@ -196,25 +170,26 @@ namespace Hanzo.Player
 
             if (view.IsMine)
             {
-                GameObject Canvas = Instantiate(gameOverGO, transform.position, Quaternion.identity);
-                Canvas.SetActive(true);
-                Time.timeScale = 0;
+                GameObject GameOverCanvas = Instantiate(gameOverGO, transform.position, Quaternion.identity);
+
+                PositionSystem positionSystem = FindObjectOfType<PositionSystem>();
+                finalPosition = positionSystem.GetNextAvailablePosition();
+
+                string playerName = view.Owner.NickName; // Adjust this based on your Photon setup
+                positionSystem.AssignPlayerPosition(playerName, finalPosition);
+
+
+                GameOverCanvas.SetActive(true);
+                Debug.Log(finalPosition.ToString());
+
+                // this.GetComponent<PlayerScript>().enabled = false;
+
+                // Time.timeScale = 0;
             }
             anim.SetBool("Run", false);
             enabled = false;
 
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
